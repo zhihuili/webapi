@@ -1,18 +1,19 @@
 package com.nana.webapi.action;
 
-import com.opensymphony.xwork2.ActionContext;
-import com.opensymphony.xwork2.ActionSupport;
 
 public class AskAction {
-	private String received;
+	private String ask;
 
-	public String getReceived() {
-		return received;
+
+	public String getAsk() {
+		return ask;
 	}
 
-	public void setReceived(String received) {
-		this.received = received;
+
+	public void setAsk(String ask) {
+		this.ask = ask;
 	}
+
 
 	public String execute() throws Exception {
 		return "received";
