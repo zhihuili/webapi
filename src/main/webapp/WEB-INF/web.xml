@@ -29,4 +29,19 @@
 	<listener>
 		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
 	</listener>
+
+	<servlet>
+		<servlet-name>ask</servlet-name>
+		<servlet-class>com.nana.webapi.servlet.MessageServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ask</servlet-name>
+		<url-pattern>/ask</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>appPush</servlet-name>
+		<servlet-class>com.nana.webapi.servlet.AppPushServlet</servlet-class>
+		<load-on-startup>0</load-on-startup>
+	</servlet>
 </web-app>
