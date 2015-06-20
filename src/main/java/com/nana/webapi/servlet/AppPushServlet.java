@@ -13,8 +13,6 @@ import javapns.notification.PushedNotification;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
-import junit.framework.Assert;
-
 import com.alibaba.fastjson.JSON;
 import com.baidu.yun.channel.auth.ChannelKeyPair;
 import com.baidu.yun.channel.client.BaiduChannelClient;
@@ -178,8 +176,6 @@ public class AppPushServlet extends HttpServlet {
 			// 5. 调用pushMessage接口
 			PushUnicastMessageResponse response = channelClient
 					.pushUnicastMessage(request);
-
-			Assert.assertEquals(1, response.getSuccessAmount());
 
 		} catch (ChannelClientException e) {
 			// 处理客户端错误异常
