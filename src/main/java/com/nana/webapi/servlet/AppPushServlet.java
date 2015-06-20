@@ -1,9 +1,17 @@
 package com.nana.webapi.servlet;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javapns.devices.Device;
+import javapns.devices.implementations.basic.BasicDevice;
+import javapns.notification.AppleNotificationServerBasicImpl;
+import javapns.notification.PushNotificationManager;
+import javapns.notification.PushNotificationPayload;
+import javapns.notification.PushedNotification;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-
-import junit.framework.Assert;
 
 import com.alibaba.fastjson.JSON;
 import com.baidu.yun.channel.auth.ChannelKeyPair;
@@ -33,7 +41,12 @@ public class AppPushServlet extends HttpServlet {
 			public void process(String key, String tag, byte[] body) {
 				ResponseMessage message = JSON.parseObject(new String(body),
 						ResponseMessage.class);
-				processResponse(message);
+				try {
+					processResponse(message);
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+					e.printStackTrace();
+				}
 			}
 		};
 		MqFactory.startMqConsumer(cid, topic, linstener);
@@ -43,11 +56,85 @@ public class AppPushServlet extends HttpServlet {
 	private void processResponse(ResponseMessage rm) {
 		int osType = rm.getMobileType();
 		if (osType == 0) {// ios
-
+			sendIOSResponse(rm);
 		}
 		if (osType == 1) {// android
 			sendAndroidResponse(rm);
 		}
+	}
+
+	/**
+	 * 推送消息给ios设备<br>
+	 * TODO optimize it
+	 * 
+	 * @param rm
+	 */
+	private void sendIOSResponse(ResponseMessage rm) {
+		List<String> tokens = new ArrayList<String>();
+		tokens.add(rm.getId());
+		System.out.println(rm.getId() + "  " + rm.getDisplayText());
+		// String path = "IntelligencePush.p12";
+		String path = "push2.p12";
+		String password = "abcabc";
+		String message = rm.getDisplayText();
+		sendIOS(tokens, path, password, message);
+	}
+
+	/**
+	 * WARNNING just for testing TODO
+	 * 
+	 * @param tokens
+	 * @param path
+	 * @param password
+	 * @param message
+	 */
+	private void sendIOS(List<String> tokens, String path, String password,
+			String message) {
+		try {
+			PushNotificationPayload payLoad = new PushNotificationPayload();
+			payLoad.addAlert(message); // 消息内容
+			PushNotificationManager pushManager = new PushNotificationManager();
+			// true：表示的是产品发布推送服务 false：表示的是产品测试推送服务
+			pushManager
+					.initializeConnection(new AppleNotificationServerBasicImpl(
+							path, password, false));
+			List<PushedNotification> notifications = new ArrayList<PushedNotification>();
+			// 发送push消息
+			Device device = new BasicDevice();
+			device.setToken(tokens.get(0));
+			PushedNotification notification = pushManager.sendNotification(
+					device, payLoad, true);
+			notifications.add(notification);
+			List<PushedNotification> failedNotifications = PushedNotification
+					.findFailedNotifications(notifications);
+			List<PushedNotification> successfulNotifications = PushedNotification
+					.findSuccessfulNotifications(notifications);
+			int failed = failedNotifications.size();
+			int successful = successfulNotifications.size();
+			if (successful > 0 && failed == 0) {
+				System.out.println("-----All notifications pushed 成功 ("
+						+ successfulNotifications.size() + "):");
+			} else if (successful == 0 && failed > 0) {
+				System.out.println("-----All notifications 失败 ("
+						+ failedNotifications.size() + "):");
+			} else if (successful == 0 && failed == 0) {
+				System.out
+						.println("No notifications could be sent, probably because of a critical error");
+			} else {
+				System.out.println("------Some notifications 失败 ("
+						+ failedNotifications.size() + "):");
+				System.out.println("------Others 成功 ("
+						+ successfulNotifications.size() + "):");
+			}
+
+			// pushManager.stopConnection();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+		}
+
 	}
 
 	/**
@@ -89,8 +176,6 @@ public class AppPushServlet extends HttpServlet {
 			// 5. 调用pushMessage接口
 			PushUnicastMessageResponse response = channelClient
 					.pushUnicastMessage(request);
-
-			Assert.assertEquals(1, response.getSuccessAmount());
 
 		} catch (ChannelClientException e) {
 			// 处理客户端错误异常
