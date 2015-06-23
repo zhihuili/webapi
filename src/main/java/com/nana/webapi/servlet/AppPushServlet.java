@@ -74,7 +74,7 @@ public class AppPushServlet extends HttpServlet {
 		tokens.add(rm.getId());
 		System.out.println(rm.getId() + "  " + rm.getDisplayText());
 		// String path = "IntelligencePush.p12";
-		String path = "push2.p12";
+		String path = "NewItelligencePush.p12";
 		String password = "abcabc";
 		String message = rm.getDisplayText();
 		sendIOS(tokens, path, password, message);
