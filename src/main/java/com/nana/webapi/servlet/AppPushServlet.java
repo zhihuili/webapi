@@ -70,6 +70,7 @@ public class AppPushServlet extends HttpServlet {
 	 * @param rm
 	 */
 	private void sendIOSResponse(ResponseMessage rm) {
+
 		List<String> tokens = new ArrayList<String>();
 		tokens.add(rm.getId());
 		System.out.println(rm.getId() + "  " + rm.getDisplayText());
@@ -144,8 +145,9 @@ public class AppPushServlet extends HttpServlet {
 	 *            消息
 	 */
 	private void sendAndroidResponse(ResponseMessage rm) {
-		String apiKey = "ULRG70qpru7YYbXPbAML9lFq";
-		String secretKey = "oCTV8NzWsXOyb60L77COjKHzYYiGUkVX";
+
+		String apiKey = "UNHymwX9PMI4OnxYxsUaLDVk";
+		String secretKey = "x4uYx5SSDHnyMGAb4djksDrF1M5NXHAf";
 		ChannelKeyPair pair = new ChannelKeyPair(apiKey, secretKey);
 
 		// 2. 创建BaiduChannelClient对象实例
@@ -159,15 +161,17 @@ public class AppPushServlet extends HttpServlet {
 			}
 		});
 
+		
 		try {
 			// userId=741732476559928435 channelId=3506718507675085896
 			// 4. 创建请求类对象
 			PushUnicastMessageRequest request = new PushUnicastMessageRequest();
-			request.setDeviceType(3);
+			//request.setDeviceType(rm.getMobileType());//3
 
-			request.setChannelId(Long.valueOf(rm.getId()));
-			request.setUserId("772200991652482178");
-
+			//request.setChannelId(Long.valueOf(rm.getId()));
+			request.setUserId(rm.getId());
+			
+			//request.setMessageType(1);
 			request.setMessage(rm.getDisplayText());
 			// 06-19 04:21:11.604: I/System.out(1506): onBind errorCode=0
 			// appid=6246871 userId=772200991652482178
@@ -176,6 +180,7 @@ public class AppPushServlet extends HttpServlet {
 			// 5. 调用pushMessage接口
 			PushUnicastMessageResponse response = channelClient
 					.pushUnicastMessage(request);
+			System.out.println("success sent:" + response.getSuccessAmount());
 
 		} catch (ChannelClientException e) {
 			// 处理客户端错误异常
@@ -188,4 +193,6 @@ public class AppPushServlet extends HttpServlet {
 		}
 
 	}
+
+	 
 }
