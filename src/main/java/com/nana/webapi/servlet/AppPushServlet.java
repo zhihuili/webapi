@@ -1,8 +1,12 @@
 package com.nana.webapi.servlet;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import javapns.communication.exceptions.CommunicationException;
+import javapns.communication.exceptions.KeystoreException;
 import javapns.devices.Device;
 import javapns.devices.implementations.basic.BasicDevice;
 import javapns.notification.AppleNotificationServerBasicImpl;
@@ -29,6 +33,7 @@ import com.nana.common.mq.MqFactory;
 public class AppPushServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 4604994618124281361L;
+	PushNotificationManager pushManager;
 
 	@Override
 	public void init() throws ServletException {
@@ -51,6 +56,21 @@ public class AppPushServlet extends HttpServlet {
 		};
 		MqFactory.startMqConsumer(cid, topic, linstener);
 
+		String path = "LatestPush.p12";
+		String password = "123456";
+		pushManager = new PushNotificationManager();
+		// true：表示的是产品发布推送服务 false：表示的是产品测试推送服务
+		try {
+			pushManager
+					.initializeConnection(new AppleNotificationServerBasicImpl(
+							path, password, false));
+		} catch (CommunicationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (KeystoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void processResponse(ResponseMessage rm) {
@@ -75,10 +95,9 @@ public class AppPushServlet extends HttpServlet {
 		tokens.add(rm.getId());
 		System.out.println(rm.getId() + "  " + rm.getDisplayText());
 		// String path = "IntelligencePush.p12";
-		String path = "NewItelligencePush.p12";
-		String password = "abcabc";
+
 		String message = rm.getDisplayText();
-		sendIOS(tokens, path, password, message);
+		sendIOS(tokens, message);
 	}
 
 	/**
@@ -89,20 +108,18 @@ public class AppPushServlet extends HttpServlet {
 	 * @param password
 	 * @param message
 	 */
-	private void sendIOS(List<String> tokens, String path, String password,
-			String message) {
+	private void sendIOS(List<String> tokens, String message) {
 		try {
+
+			long start = System.currentTimeMillis();
 			PushNotificationPayload payLoad = new PushNotificationPayload();
 			payLoad.addAlert(message); // 消息内容
-			PushNotificationManager pushManager = new PushNotificationManager();
-			// true：表示的是产品发布推送服务 false：表示的是产品测试推送服务
-			pushManager
-					.initializeConnection(new AppleNotificationServerBasicImpl(
-							path, password, false));
+
 			List<PushedNotification> notifications = new ArrayList<PushedNotification>();
 			// 发送push消息
 			Device device = new BasicDevice();
 			device.setToken(tokens.get(0));
+			long end1 = System.currentTimeMillis();
 			PushedNotification notification = pushManager.sendNotification(
 					device, payLoad, true);
 			notifications.add(notification);
@@ -127,7 +144,10 @@ public class AppPushServlet extends HttpServlet {
 				System.out.println("------Others 成功 ("
 						+ successfulNotifications.size() + "):");
 			}
+			long end2 = System.currentTimeMillis();
 
+			System.out.println("init time:" + (end1 - start));
+			System.out.println("send time:" + (end2 - start));
 			// pushManager.stopConnection();
 
 		} catch (Exception e) {
@@ -161,17 +181,16 @@ public class AppPushServlet extends HttpServlet {
 			}
 		});
 
-		
 		try {
 			// userId=741732476559928435 channelId=3506718507675085896
 			// 4. 创建请求类对象
 			PushUnicastMessageRequest request = new PushUnicastMessageRequest();
-			//request.setDeviceType(rm.getMobileType());//3
+			// request.setDeviceType(rm.getMobileType());//3
 
-			//request.setChannelId(Long.valueOf(rm.getId()));
+			// request.setChannelId(Long.valueOf(rm.getId()));
 			request.setUserId(rm.getId());
-			
-			//request.setMessageType(1);
+
+			// request.setMessageType(1);
 			request.setMessage(rm.getDisplayText());
 			// 06-19 04:21:11.604: I/System.out(1506): onBind errorCode=0
 			// appid=6246871 userId=772200991652482178
@@ -194,5 +213,4 @@ public class AppPushServlet extends HttpServlet {
 
 	}
 
-	 
 }
