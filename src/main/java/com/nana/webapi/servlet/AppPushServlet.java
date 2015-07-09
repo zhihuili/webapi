@@ -93,9 +93,9 @@ public class AppPushServlet extends HttpServlet {
 
 		List<String> tokens = new ArrayList<String>();
 		tokens.add(rm.getId());
-		System.out.println(rm.getId() + "  " + rm.getAudioText());
 		// String path = "IntelligencePush.p12";
-		String message = rm.getAudioText();//JSON.toJSONString(rm);
+		String message = JSON.toJSONString(rm);
+		System.out.println(rm.getId() + "  " + message);
 		sendIOS(tokens, message);
 	}
 
