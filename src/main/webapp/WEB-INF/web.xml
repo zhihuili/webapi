@@ -44,4 +44,13 @@
 		<servlet-class>com.nana.webapi.servlet.AppPushServlet</servlet-class>
 		<load-on-startup>0</load-on-startup>
 	</servlet>
+	
+	<servlet>
+		<servlet-name>htmlCenter</servlet-name>
+		<servlet-class>com.nana.webapi.servlet.TransMessServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>htmlCenter</servlet-name>
+		<url-pattern>/htmlGenerator</url-pattern>
+	</servlet-mapping>
 </web-app>
