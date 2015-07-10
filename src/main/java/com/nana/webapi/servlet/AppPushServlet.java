@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javapns.communication.exceptions.CommunicationException;
 import javapns.communication.exceptions.KeystoreException;
@@ -29,6 +31,8 @@ import com.baidu.yun.core.log.YunLogHandler;
 import com.nana.common.message.ResponseMessage;
 import com.nana.common.mq.ConsumerListener;
 import com.nana.common.mq.MqFactory;
+import com.nana.webapi.bean.ResponseDisplay;
+import com.nana.webapi.cacher.HtmlCacher;
 
 public class AppPushServlet extends HttpServlet {
 
@@ -93,10 +97,38 @@ public class AppPushServlet extends HttpServlet {
 
 		List<String> tokens = new ArrayList<String>();
 		tokens.add(rm.getId());
-		// String path = "IntelligencePush.p12";
-		String message = JSON.toJSONString(rm);
-		System.out.println(rm.getId() + "  " + message);
+		System.out.print(rm.getId());
+		// 精简消息 去除id
+		rm.setId(null);
+
+		String message = null;
+		ResponseDisplay rd = prepareHtml(rm);
+		if (rd != null && rd.getDataType() != null && "1".equals(rd.getDataType())) {
+			//如果是html的信息
+			message = JSON.toJSONString(rd);
+		} else {
+			//普通对话消息
+			message = JSON.toJSONString(rm);
+		}
+		System.out.println("  " + message);
 		sendIOS(tokens, message);
+	}
+
+	/**
+	 * 将html提取并放入本地Map，并把新生成的uuid放入消息并发给客户端，客户端使用uuid请求本地Map中的html
+	 * 
+	 * @param rm
+	 */
+	private ResponseDisplay prepareHtml(ResponseMessage rm) {
+		if (rm.getDisplayText() == null)
+			return null;
+		ResponseDisplay rd = JSON.parseObject(rm.getDisplayText(),
+				ResponseDisplay.class);
+		String uuid = UUID.randomUUID().toString();
+		System.out.println(uuid);
+		HtmlCacher.HTMLCACHE.put(uuid, rd.getContent());
+		rd.setContent(uuid);
+		return rd;
 	}
 
 	/**
