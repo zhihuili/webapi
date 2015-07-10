@@ -144,8 +144,8 @@ public class AppPushServlet extends HttpServlet {
 
 			long start = System.currentTimeMillis();
 			PushNotificationPayload payLoad = new PushNotificationPayload();
-			payLoad.addAlert(message); // 消息内容
-
+			payLoad.addAlert("您有一条新消息！"); // 消息内容
+			payLoad.addCustomDictionary("data", message);
 			List<PushedNotification> notifications = new ArrayList<PushedNotification>();
 			// 发送push消息
 			Device device = new BasicDevice();
