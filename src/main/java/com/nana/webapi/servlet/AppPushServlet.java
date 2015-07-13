@@ -125,8 +125,10 @@ public class AppPushServlet extends HttpServlet {
 		ResponseDisplay rd = JSON.parseObject(rm.getDisplayText(),
 				ResponseDisplay.class);
 		String uuid = UUID.randomUUID().toString();
-		System.out.println(uuid);
 		HtmlCacher.HTMLCACHE.put(uuid, rd.getContent());
+		
+		//test must to delete
+		System.out.println(rd.getContent());
 		rd.setContent(uuid);
 		return rd;
 	}
