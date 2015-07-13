@@ -16,7 +16,6 @@ public class TransMessServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String uuid = request.getParameter("uuid");
-		System.out.println("uuid:"+uuid);
 		
 		String html = HtmlCacher.HTMLCACHE.get(uuid);
 		if(html == null) return ;
