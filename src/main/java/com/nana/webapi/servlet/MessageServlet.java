@@ -13,12 +13,13 @@ import com.nana.common.message.GPS;
 import com.nana.common.message.RequestMessage;
 import com.nana.common.mq.MqFactory;
 import com.nana.common.mq.MqProducer;
+import com.nana.common.utils.Property;
 
 public class MessageServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 2729029845665031617L;
-	MqProducer opc = MqFactory.getMqProducer("PID_DEV_NANA_1");
-	String topic = "DEV_NANA_1";
+	MqProducer opc = MqFactory.getMqProducer(Property.getInstance().getCfg("pid1"));
+	String topic = Property.getInstance().getCfg("topic1");
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
