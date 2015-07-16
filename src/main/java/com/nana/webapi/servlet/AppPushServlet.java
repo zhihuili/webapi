@@ -31,6 +31,7 @@ import com.baidu.yun.core.log.YunLogHandler;
 import com.nana.common.message.ResponseMessage;
 import com.nana.common.mq.ConsumerListener;
 import com.nana.common.mq.MqFactory;
+import com.nana.common.utils.Property;
 import com.nana.webapi.bean.ResponseDisplay;
 import com.nana.webapi.cacher.HtmlCacher;
 
@@ -41,8 +42,8 @@ public class AppPushServlet extends HttpServlet {
 
 	@Override
 	public void init() throws ServletException {
-		String cid = "CID_DEV_NANA_3";
-		String topic = "DEV_NANA_3";
+		String cid = Property.getInstance().getCfg("cid3");
+		String topic = Property.getInstance().getCfg("topic3");
 
 		ConsumerListener linstener = new ConsumerListener() {
 
