@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class PageEncodingFilter implements Filter {
 
-	private String encoding = "ISO-8859-1";
+	private String encoding = "utf-8";
 	protected FilterConfig filterConfig;
 
 	@Override
@@ -27,8 +27,8 @@ public class PageEncodingFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest srequset, ServletResponse sresponse,
 			FilterChain filterChain) throws IOException, ServletException {
-		//HttpServletRequest request = (HttpServletRequest) srequset;
-		//request.setCharacterEncoding(encoding);
+		HttpServletRequest request = (HttpServletRequest) srequset;
+		request.setCharacterEncoding(encoding);
 		HttpServletResponse response=(HttpServletResponse)sresponse;
 		response.setCharacterEncoding(encoding);
 		//test

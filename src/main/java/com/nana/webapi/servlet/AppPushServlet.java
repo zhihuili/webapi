@@ -126,14 +126,14 @@ public class AppPushServlet extends HttpServlet {
 			return null;
 		ResponseDisplay rd = JSON.parseObject(rm.getDisplayText(),
 				ResponseDisplay.class);
-		String content;
-		try {
-			content= new String(rd.getContent().getBytes("utf-8"),"iso-8859-1");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			content = rd.getContent();
-		}
+		String content=rd.getContent();
+//		try {
+//			content= new String(rd.getContent().getBytes("utf-8"),"iso-8859-1");
+//		} catch (UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			content = rd.getContent();
+//		}
 		String uuid = UUID.randomUUID().toString();
 		HtmlCacher.HTMLCACHE.put(uuid, content);
 		
