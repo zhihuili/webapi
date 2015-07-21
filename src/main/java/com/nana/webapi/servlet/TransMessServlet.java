@@ -19,7 +19,7 @@ public class TransMessServlet extends HttpServlet {
 		
 		String html = HtmlCacher.HTMLCACHE.get(uuid);
 		if(html == null) return ;
-		//HtmlCacher.HTMLCACHE.remove(uuid);
+		HtmlCacher.HTMLCACHE.remove(uuid);
 		PrintWriter writer = response.getWriter();
 		writer.write(html);
 		writer.flush();
