@@ -62,7 +62,7 @@ public class AppPushServlet extends HttpServlet {
 		};
 		MqFactory.startMqConsumer(cid, topic, linstener);
 
-		String path = "push.p12";
+		String path = "NewPush.p12";
 		String password = "123456";
 		pushManager = new PushNotificationManager();
 		// true：表示的是产品发布推送服务 false：表示的是产品测试推送服务
